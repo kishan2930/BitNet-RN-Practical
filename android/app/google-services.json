@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "492847460022",
+    "project_id": "bitnet-rn-practical",
+    "storage_bucket": "bitnet-rn-practical.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492847460022:android:ccbd704e5f26e455b4c017",
+        "android_client_info": {
+          "package_name": "com.clot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "492847460022-krnglhcr3m6vshml40bu9cpjvb7iqs9s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.clot",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "492847460022-jiat6jv0t6j6ucg2t705960vijbgddaf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDThfqXthX4wRc7tLpFsVh0mTdII2Z6PKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "492847460022-jiat6jv0t6j6ucg2t705960vijbgddaf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
