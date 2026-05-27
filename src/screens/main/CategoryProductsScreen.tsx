@@ -5,14 +5,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft, Heart } from 'lucide-react-native';
 import firestore from '@react-native-firebase/firestore';
 import CustomText from '@components/CustomText';
-import { ProductItem } from '@appTypes/main';
+import { ProductItem, Gender } from '@appTypes/main';
 import { categoryProductsStyles as styles } from '@styles/main/categoryProductsStyles';
 import { COLORS } from '@constants/theme';
 
 const CategoryProductsScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { categoryId, categoryName } = route.params || { categoryId: '', categoryName: 'Products' };
+  const { categoryId, categoryName, gender } = route.params || { categoryId: '', categoryName: 'Products', gender: Gender.MEN };
 
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +28,7 @@ const CategoryProductsScreen = () => {
     const unsubscribe = firestore()
       .collection('clot_products')
       .where('categoryId', '==', categoryId)
+      .where('gender', '==', gender)
       .onSnapshot(
         (snapshot) => {
           if (snapshot) {
@@ -46,7 +47,7 @@ const CategoryProductsScreen = () => {
       );
 
     return () => unsubscribe();
-  }, [categoryId]);
+  }, [categoryId, gender]);
 
   const toggleFavorite = (productId: string) => {
     if (favorites.includes(productId)) {

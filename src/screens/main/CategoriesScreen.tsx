@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 import firestore from '@react-native-firebase/firestore';
 import CustomText from '@components/CustomText';
-import { CategoryItem } from '@appTypes/main';
+import { CategoryItem, Gender } from '@appTypes/main';
 import { categoriesStyles as styles } from '@styles/main/categoriesStyles';
 import { COLORS } from '@constants/theme';
 
 const CategoriesScreen = () => {
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const { gender } = route.params || { gender: Gender.MEN };
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +49,7 @@ const CategoriesScreen = () => {
         navigation.navigate('CategoryProducts', {
           categoryId: item.id,
           categoryName: item.name,
+          gender,
         })
       }
     >

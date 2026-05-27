@@ -1,5 +1,11 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+export enum Gender {
+  MEN = 'men',
+  WOMEN = 'women',
+  KIDS = 'kids',
+}
+
 export interface CategoryItem {
   id: string;
   name: string;
@@ -14,7 +20,7 @@ export interface ProductItem {
   originalPrice: number | null;
   imageUrl: string;
   categoryId: string;
-  gender: 'men' | 'women' | 'kids';
+  gender: Gender;
   isTopSelling: boolean;
   isNewIn: boolean;
   rating: number;
@@ -24,8 +30,8 @@ export interface ProductItem {
 
 export type HomeStackParamList = {
   HomeMain: undefined;
-  Categories: undefined;
-  CategoryProducts: { categoryId: string; categoryName: string };
+  Categories: { gender: Gender };
+  CategoryProducts: { categoryId: string; categoryName: string; gender: Gender };
 };
 
 export type HomeStackNavigationProp = NativeStackNavigationProp<HomeStackParamList>;

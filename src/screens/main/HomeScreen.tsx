@@ -18,7 +18,7 @@ import { useAuth } from '@services/AuthContext';
 import { seedFirestoreData } from '@utils/firestoreSeeder';
 import { COLORS } from '@constants/theme';
 import CustomText from '@components/CustomText';
-import { CategoryItem, ProductItem } from '@appTypes/main';
+import { CategoryItem, ProductItem, Gender } from '@appTypes/main';
 import { homeStyles as styles } from '@styles/main/homeStyles';
 
 
@@ -32,7 +32,7 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
 
   // Filter States
-  const [gender, setGender] = useState<'men' | 'women' | 'kids'>('men');
+  const [gender, setGender] = useState<Gender>(Gender.MEN);
   const [genderModalVisible, setGenderModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -110,7 +110,7 @@ const HomeScreen = () => {
     }
   };
 
-  const handleGenderSelect = (selectedGender: 'men' | 'women' | 'kids') => {
+  const handleGenderSelect = (selectedGender: Gender) => {
     setGender(selectedGender);
     setGenderModalVisible(false);
   };
@@ -124,6 +124,7 @@ const HomeScreen = () => {
         navigation.navigate('CategoryProducts', {
           categoryId: item.id,
           categoryName: item.name,
+          gender,
         })
       }
     >
@@ -246,7 +247,7 @@ const HomeScreen = () => {
           </CustomText>
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={() => navigation.navigate('Categories')}
+            onPress={() => navigation.navigate('Categories', { gender })}
           >
             <CustomText variant="medium" size={16} color={COLORS.primary}>
               See All
@@ -337,7 +338,7 @@ const HomeScreen = () => {
             <CustomText variant="bold" size={18} style={styles.modalTitle}>
               Select Category
             </CustomText>
-            {(['men', 'women', 'kids'] as const).map((item) => (
+            {([Gender.MEN, Gender.WOMEN, Gender.KIDS] as const).map((item) => (
               <TouchableOpacity
                 key={item}
                 style={[
