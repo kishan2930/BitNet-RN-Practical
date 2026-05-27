@@ -1,17 +1,46 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import CustomText from '@components/CustomText';
+import AppButton from '@components/AppButton';
+import OrdersCartIcon from '@assets/check-out-ordersTab.svg';
+import { ordersStyles as styles } from '@styles/main/ordersStyles';
 
 const OrdersScreen = () => {
+  const navigation = useNavigation<any>();
+
+  const handleExplore = () => {
+    navigation.navigate('HomeTab');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Orders Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <CustomText variant="bold" style={styles.headerTitle}>
+          Orders
+        </CustomText>
+      </View>
+
+      {/* Main Empty State Content */}
+      <View style={styles.content}>
+        <View style={styles.illustrationContainer}>
+          <OrdersCartIcon width={100} height={100} />
+        </View>
+
+        <CustomText variant="medium" size={24} style={styles.emptyText}>
+          No Orders yet
+        </CustomText>
+
+        <AppButton
+          title="Explore Categories"
+          onPress={handleExplore}
+          style={styles.exploreBtn}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
 export default OrdersScreen;
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
-  text: { fontSize: 20, fontWeight: 'bold', color: '#272727' },
-});

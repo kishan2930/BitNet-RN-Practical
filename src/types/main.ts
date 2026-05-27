@@ -35,3 +35,10 @@ export type HomeStackParamList = {
 };
 
 export type HomeStackNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
+
+export interface ProfileMenuItem {
+  title: string;
+  route?: string;
+  onPress?: () => void;
+}
+
