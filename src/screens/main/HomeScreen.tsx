@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -13,101 +13,53 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Search, ShoppingBag, Heart, ChevronDown } from 'lucide-react-native';
-import firestore from '@react-native-firebase/firestore';
 import { useAuth } from '@services/AuthContext';
-import { seedFirestoreData } from '@utils/firestoreSeeder';
+import { useCategories } from '@hooks/useCategories';
+import { useProducts } from '@hooks/useProducts';
 import { COLORS } from '@constants/theme';
 import CustomText from '@components/CustomText';
 import { CategoryItem, ProductItem, Gender } from '@appTypes/main';
 import { homeStyles as styles } from '@styles/main/homeStyles';
 
+import { HomeStackNavigationProp } from '@appTypes/main';
 
 const HomeScreen = () => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const { user } = useAuth();
 
-  // Seeding and Fetching States
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [products, setProducts] = useState<ProductItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Filter States
+  // Data Hooks
+  const { categories, loading: categoriesLoading } = useCategories();
   const [gender, setGender] = useState<Gender>(Gender.MEN);
+  const { products, loading: productsLoading } = useProducts(gender);
+
+  // UI States
   const [genderModalVisible, setGenderModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  useEffect(() => {
-    const initAndFetch = async () => {
-      try {
-        setLoading(true);
-        // Trigger seeder first (checks if already seeded internally)
-        await seedFirestoreData();
+  const loading = categoriesLoading || productsLoading;
 
-        // Listen to Categories in real-time
-        const unsubscribeCategories = firestore()
-          .collection('clot_categories')
-          .orderBy('displayOrder', 'asc')
-          .onSnapshot(
-            (snapshot) => {
-              if (snapshot) {
-                const cats = snapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  ...(doc.data() as Omit<CategoryItem, 'id'>),
-                }));
-                setCategories(cats);
-              }
-            },
-            (error) => console.error('Error fetching categories:', error)
-          );
-
-        // Listen to Products in real-time
-        const unsubscribeProducts = firestore()
-          .collection('clot_products')
-          .onSnapshot(
-            (snapshot) => {
-              if (snapshot) {
-                const prods = snapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  ...(doc.data() as Omit<ProductItem, 'id'>),
-                }));
-                setProducts(prods);
-              }
-            },
-            (error) => console.error('Error fetching products:', error)
-          );
-
-        setLoading(false);
-
-        return () => {
-          unsubscribeCategories();
-          unsubscribeProducts();
-        };
-      } catch (err) {
-        console.error('Error in initAndFetch:', err);
-        setLoading(false);
-      }
-    };
-
-    initAndFetch();
-  }, []);
-
-  // Filter lists locally based on gender selection and search query
-  const filteredProducts = products.filter(
-    (p) =>
-      p.gender === gender &&
+  // Filter lists locally based on search query
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => 
       p.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    );
+  }, [products, searchQuery]);
 
-  const topSellingProducts = filteredProducts.filter((p) => p.isTopSelling);
-  const newInProducts = filteredProducts.filter((p) => p.isNewIn);
+  const topSellingProducts = useMemo(() => 
+    filteredProducts.filter((p) => p.isTopSelling), 
+  [filteredProducts]);
+
+  const newInProducts = useMemo(() => 
+    filteredProducts.filter((p) => p.isNewIn), 
+  [filteredProducts]);
 
   const toggleFavorite = (productId: string) => {
-    if (favorites.includes(productId)) {
-      setFavorites(favorites.filter((id) => id !== productId));
-    } else {
-      setFavorites([...favorites, productId]);
-    }
+    setFavorites(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
   };
 
   const handleGenderSelect = (selectedGender: Gender) => {
@@ -115,17 +67,12 @@ const HomeScreen = () => {
     setGenderModalVisible(false);
   };
 
-  // Render a Category Icon
   const renderCategoryIcon = ({ item }: { item: CategoryItem }) => (
     <TouchableOpacity
       style={styles.categoryItem}
       activeOpacity={0.7}
       onPress={() =>
-        navigation.navigate('CategoryProducts', {
-          categoryId: item.id,
-          categoryName: item.name,
-          gender,
-        })
+        navigation.navigate('Categories', { gender })
       }
     >
       <View style={styles.categoryImageContainer}>
@@ -137,7 +84,6 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  // Render a Product Card
   const renderProductCard = ({ item }: { item: ProductItem }) => {
     const isFavorited = favorites.includes(item.id);
     return (
@@ -145,10 +91,9 @@ const HomeScreen = () => {
         style={styles.productCard}
         activeOpacity={0.9}
         onPress={() => {
-          // Can navigate to details in future steps
+          // Future: navigation.navigate('ProductDetails', { productId: item.id })
         }}
       >
-        {/* Favorite Icon */}
         <TouchableOpacity
           style={styles.favoriteButton}
           activeOpacity={0.8}
@@ -161,10 +106,8 @@ const HomeScreen = () => {
           />
         </TouchableOpacity>
 
-        {/* Product Image */}
         <Image source={{ uri: item.imageUrl }} style={styles.productImage} />
 
-        {/* Product Info */}
         <View style={styles.productDetails}>
           <CustomText
             variant="book"
@@ -197,7 +140,7 @@ const HomeScreen = () => {
 
   const userAvatar = user?.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
 
-  if (loading) {
+  if (loading && categories.length === 0) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
@@ -207,7 +150,6 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
       <View style={styles.header}>
         <Image source={{ uri: userAvatar }} style={styles.profileAvatar} />
 
@@ -232,7 +174,6 @@ const HomeScreen = () => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Search Bar */}
         <View style={styles.searchBarContainer}>
           <Search size={18} color={COLORS.textSecondary} style={styles.searchIcon} />
           <TextInput
@@ -244,7 +185,6 @@ const HomeScreen = () => {
           />
         </View>
 
-        {/* Categories Section */}
         <View style={styles.sectionHeader}>
           <CustomText variant="bold" size={18}>
             Categories
@@ -268,7 +208,6 @@ const HomeScreen = () => {
           contentContainerStyle={styles.categoriesList}
         />
 
-        {/* Top Selling Section */}
         <View style={styles.sectionHeader}>
           <CustomText variant="bold" size={18}>
             Top Selling
@@ -292,12 +231,11 @@ const HomeScreen = () => {
         ) : (
           <View style={styles.emptyContainer}>
             <CustomText variant="book" size={14} color={COLORS.textSecondary}>
-              No top selling products found for "{gender}".
+              {productsLoading ? 'Loading products...' : `No top selling products found for "${gender}".`}
             </CustomText>
           </View>
         )}
 
-        {/* New In Section */}
         <View style={styles.sectionHeader}>
           <CustomText variant="bold" size={18}>
             New In
@@ -321,13 +259,12 @@ const HomeScreen = () => {
         ) : (
           <View style={styles.emptyContainer}>
             <CustomText variant="book" size={14} color={COLORS.textSecondary}>
-              No new products found for "{gender}".
+              {productsLoading ? 'Loading products...' : `No new products found for "${gender}".`}
             </CustomText>
           </View>
         )}
       </ScrollView>
 
-      {/* Gender Dropdown Selection Modal */}
       <Modal
         visible={genderModalVisible}
         transparent

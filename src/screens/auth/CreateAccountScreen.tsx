@@ -10,9 +10,14 @@ import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@react-n
 import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
 import { createAccountStyles as styles } from '@styles/auth/createAccountStyles';
 import { SignUpFormState } from '@appTypes/auth';
-import { useSignUpForm } from '@hooks';
+import { useSignUpForm } from '@hooks/useSignUpForm';
 
-const CreateAccountScreen = ({ navigation }: any) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@appTypes/auth';
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'CreateAccount'>;
+
+const CreateAccountScreen = ({ navigation }: Props) => {
   const handleSignUpSubmit = async (data: SignUpFormState) => {
     try {
       const { email, password, firstName, lastName } = data;

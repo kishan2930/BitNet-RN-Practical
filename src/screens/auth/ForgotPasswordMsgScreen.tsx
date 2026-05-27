@@ -7,7 +7,12 @@ import { horizontalScale } from '@utils/responsive';
 import ForgotPasswordMsgIcon from '@assets/forgotpassword-message.svg';
 import { forgotPasswordMsgStyles as styles } from '@styles/auth/forgotPasswordMsgStyles';
 
-const ForgotPasswordMsgScreen = ({ navigation }: any) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@appTypes/auth';
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPasswordMsg'>;
+
+const ForgotPasswordMsgScreen = ({ navigation }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>

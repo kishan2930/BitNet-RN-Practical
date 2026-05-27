@@ -6,13 +6,18 @@ import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
 import { COLORS } from '@constants/theme';
 import { useAuth } from '@services/AuthContext';
-import { useLoginForm } from '@hooks';
+import { useLoginForm } from '@hooks/useLoginForm';
 import AppleIcon from '@assets/appleicon.svg';
 import GoogleIcon from '@assets/Googleicon.svg';
 import FacebookIcon from '@assets/Facebookicon.svg';
 import { loginStyles as styles } from '@styles/auth/loginStyles';
 
-const LoginScreen = ({ navigation }: any) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@appTypes/auth';
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+
+const LoginScreen = ({ navigation }: Props) => {
   const { loginWithGoogle } = useAuth();
   const { email, error, handleEmailChange, handleSubmit } = useLoginForm((validEmail: string) => {
     navigation.navigate('LoginPassword', { email: validEmail });

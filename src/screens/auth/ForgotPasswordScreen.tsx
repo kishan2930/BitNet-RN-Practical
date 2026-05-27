@@ -8,9 +8,14 @@ import { COLORS } from '@constants/theme';
 import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
 import { forgotPasswordStyles as styles } from '@styles/auth/forgotPasswordStyles';
-import { useForgotPasswordForm } from '@hooks';
+import { useForgotPasswordForm } from '@hooks/useForgotPasswordForm';
 
-const ForgotPasswordScreen = ({ navigation }: any) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@appTypes/auth';
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
+
+const ForgotPasswordScreen = ({ navigation }: Props) => {
   const handleResetSubmit = async (emailInput: string) => {
     try {
       await sendPasswordResetEmail(getAuth(), emailInput);

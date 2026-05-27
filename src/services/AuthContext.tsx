@@ -2,11 +2,13 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import firestore from '@react-native-firebase/firestore';
+import { UserService, UserProfile } from './userService';
 
 interface AuthContextType {
   user: FirebaseAuthTypes.User | null;
+  profile: UserProfile | null;
   loading: boolean;
+  isProfileLoading: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -15,15 +17,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-
-  function onAuthStateChanged(userState: FirebaseAuthTypes.User | null) {
-    setUser(userState);
-    if (loading) setLoading(false);
-  }
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = auth().onAuthStateChanged((userState) => {
+      setUser(userState);
+      if (loading) setLoading(false);
+    });
 
     GoogleSignin.configure({
       webClientId: '492847460022-jiat6jv0t6j6ucg2t705960vijbgddaf.apps.googleusercontent.com',
@@ -31,6 +33,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return subscriber;
   }, []);
+
+  useEffect(() => {
+    let unsubscribeProfile: (() => void) | undefined;
+
+    if (user) {
+      setIsProfileLoading(true);
+      unsubscribeProfile = UserService.subscribeToUserProfile(user.uid, (data) => {
+        setProfile(data);
+        setIsProfileLoading(false);
+      });
+    } else {
+      setProfile(null);
+      setIsProfileLoading(false);
+    }
+
+    return () => {
+      if (unsubscribeProfile) unsubscribeProfile();
+    };
+  }, [user]);
 
   const loginWithGoogle = async () => {
     try {
@@ -47,17 +68,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const result = await auth().signInWithCredential(googleCredential);
 
-      // NATIVE FIRESTORE SYNTAX: Check if user document exists
-      const userDoc = await firestore().collection('users').doc(result.user.uid).get();
+      // Check if user document exists via UserService
+      const existingProfile = await UserService.getUserProfile(result.user.uid);
 
-      if (!userDoc.exists) {
+      if (!existingProfile) {
         const displayName = result.user.displayName || '';
         const nameParts = displayName.trim().split(/\s+/);
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        // NATIVE FIRESTORE SYNTAX: Create document
-        await firestore().collection('users').doc(result.user.uid).set({
+        await UserService.setUserProfile(result.user.uid, {
           firstName,
           lastName,
           email: result.user.email || '',
@@ -65,16 +85,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isOnboardingComplete: false,
         });
       }
-    } catch (error: any) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Google Sign-In was cancelled by the user.');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('Google Sign-In is already in progress.');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert('Google Play Services', 'Google Play Services are not available or outdated.');
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error) {
+        const errorCode = error.code;
+        if (errorCode === statusCodes.SIGN_IN_CANCELLED) {
+          console.log('Google Sign-In was cancelled by the user.');
+        } else if (errorCode === statusCodes.IN_PROGRESS) {
+          console.log('Google Sign-In is already in progress.');
+        } else if (errorCode === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          Alert.alert('Google Play Services', 'Google Play Services are not available or outdated.');
+        } else {
+          console.error('Google Sign-In failed:', error);
+          const message = 'message' in error ? String(error.message) : 'An error occurred during Google Sign-In.';
+          Alert.alert('Google Sign-In Error', message);
+        }
       } else {
         console.error('Google Sign-In failed:', error);
-        Alert.alert('Google Sign-In Error', error.message || 'An error occurred during Google Sign-In.');
+        Alert.alert('Google Sign-In Error', 'An unexpected error occurred.');
       }
     } finally {
       setLoading(false);
@@ -91,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, isProfileLoading, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

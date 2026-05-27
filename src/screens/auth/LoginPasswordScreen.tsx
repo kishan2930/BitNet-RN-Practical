@@ -8,9 +8,14 @@ import { COLORS } from '@constants/theme';
 import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import { loginPasswordStyles as styles } from '@styles/auth/loginPasswordStyles';
-import { useLoginPasswordForm } from '@hooks';
+import { useLoginPasswordForm } from '@hooks/useLoginPasswordForm';
 
-const LoginPasswordScreen = ({ navigation, route }: any) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from '@appTypes/auth';
+
+type Props = NativeStackScreenProps<AuthStackParamList, 'LoginPassword'>;
+
+const LoginPasswordScreen = ({ navigation, route }: Props) => {
   const { email } = route.params;
 
   const handleSignInSubmit = async (passwordInput: string) => {

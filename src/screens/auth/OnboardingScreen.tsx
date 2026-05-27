@@ -9,8 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import { COLORS } from '@constants/theme';
-import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
-import { getAuth } from '@react-native-firebase/auth';
+import { UserService } from '@services/userService';
+import { useAuth } from '@services/AuthContext';
 import { onboardingStyles as styles } from '@styles/auth/onboardingStyles';
 import {
   AGE_RANGES,
@@ -18,7 +18,8 @@ import {
   OnboardingFormState,
 } from '@appTypes/auth';
 
-const OnboardingScreen = ({}) => {
+const OnboardingScreen = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<OnboardingFormState>(
     INITIAL_ONBOARDING_FORM,
   );
@@ -35,26 +36,20 @@ const OnboardingScreen = ({}) => {
   };
 
   const handleFinish = async () => {
+    if (!user) {
+      Alert.alert('Error', 'No user found. Please try logging in again.');
+      return;
+    }
+
     try {
       setLoading(true);
-      const user = getAuth().currentUser;
-
-      if (user) {
-        const db = getFirestore();
-        await setDoc(
-          doc(db, 'users', user.uid),
-          {
-            gender: formData.gender,
-            ageRange: formData.ageRange,
-            isOnboardingComplete: true,
-          },
-          { merge: true },
-        );
-      } else {
-        Alert.alert('Error', 'No user found. Please try logging in again.');
-      }
-    } catch (error: any) {
-      Alert.alert('Onboarding Failed', `Error: ${error.message || error.code}`);
+      await UserService.setUserProfile(user.uid, {
+        ...formData,
+        isOnboardingComplete: true,
+      } as any);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred during onboarding.';
+      Alert.alert('Onboarding Failed', message);
     } finally {
       setLoading(false);
     }

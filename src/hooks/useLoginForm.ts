@@ -4,7 +4,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const useLoginForm = (onSuccess: (email: string) => void) => {
   const [email, setEmail] = useState('');
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
   const validate = (value: string): boolean => {
     if (!value.trim()) {
