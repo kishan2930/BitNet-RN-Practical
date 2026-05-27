@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from '@react-native-firebase/firestore';
 
 interface AuthContextType {
   user: FirebaseAuthTypes.User | null;
@@ -15,7 +16,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Handle user state changes
   function onAuthStateChanged(userState: FirebaseAuthTypes.User | null) {
     setUser(userState);
     if (loading) setLoading(false);
@@ -24,18 +24,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
-    // Configure Google Sign-In
     GoogleSignin.configure({
-      webClientId: '492847460022-jiat6jv0t6j6ucg2t705960vijbgddaf.apps.googleusercontent.com', 
+      webClientId: '492847460022-jiat6jv0t6j6ucg2t705960vijbgddaf.apps.googleusercontent.com',
     });
 
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, []);
 
   const loginWithGoogle = async () => {
     try {
       setLoading(true);
-      // For v13+, signIn returns a response with a data property
+
       const response = await GoogleSignin.signIn();
       const idToken = response.data?.idToken;
 
@@ -43,13 +42,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('No ID Token found');
       }
 
-      // Create a Google credential with the token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const result = await auth().signInWithCredential(googleCredential);
 
-      // Sign-in the user with the credential
-      await auth().signInWithCredential(googleCredential);
+      // Create Firestore user document if it doesn't exist
+      const db = getFirestore();
+      const userDocRef = doc(db, 'users', result.user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        await setDoc(userDocRef, {
+          firstName: result.user.displayName?.split(' ')[0] || '',
+          lastName: result.user.displayName?.split(' ')[1] || '',
+          email: result.user.email,
+          createdAt: serverTimestamp(),
+          isOnboardingComplete: false,
+        });
+      }
     } catch (error) {
-      console.error('Google Sign-In Error:', error);
+      console.error('Google Sign-In failed:', error);
     } finally {
       setLoading(false);
     }
@@ -60,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await auth().signOut();
       await GoogleSignin.signOut();
     } catch (error) {
-      console.error('Logout Error:', error);
+      console.error('Logout failed:', error);
     }
   };
 

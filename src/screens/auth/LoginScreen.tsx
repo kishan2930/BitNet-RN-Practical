@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, TouchableOpacity, SafeAreaView } from 'react-native';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
-import { COLORS, SPACING } from '@constants/theme';
-import { horizontalScale, verticalScale } from '@utils/responsive';
+import { COLORS } from '@constants/theme';
 import { useAuth } from '@services/AuthContext';
 import AppleIcon from '@assets/appleicon.svg';
 import GoogleIcon from '@assets/Googleicon.svg';
 import FacebookIcon from '@assets/Facebookicon.svg';
+import { loginStyles as styles } from '@styles/auth/loginStyles';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -47,36 +47,36 @@ const LoginScreen = ({ navigation }: any) => {
               </CustomText>
             </TouchableOpacity>
           </View>
-          </View>
+        </View>
 
-          <View style={styles.separatorContainer}>
+        <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <CustomText style={styles.orText} size={14} color={COLORS.textSecondary}>
             OR
           </CustomText>
           <View style={styles.line} />
-          </View>
+        </View>
 
-          <View style={styles.socialSection}>
+        <View style={styles.socialSection}>
           <AppButton
             variant="social"
             title="Continue with Apple"
             onPress={() => {}}
-            textStyle={{ fontSize: 18 }}
+            textStyle={{ fontSize: 14 }}
             icon={<AppleIcon width={24} height={24} />}
           />
           <AppButton
             variant="social"
             title="Continue with Google"
             onPress={loginWithGoogle}
-            textStyle={{ fontSize: 18 }}
+            textStyle={{ fontSize: 14 }}
             icon={<GoogleIcon width={24} height={24} />}
           />
           <AppButton
             variant="social"
             title="Continue with Facebook"
             onPress={() => {}}
-            textStyle={{ fontSize: 18 }}
+            textStyle={{ fontSize: 14 }}
             icon={<FacebookIcon width={24} height={24} />}
           />
         </View>
@@ -86,44 +86,3 @@ const LoginScreen = ({ navigation }: any) => {
 };
 
 export default LoginScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: horizontalScale(SPACING.l),
-    paddingTop: verticalScale(40),
-  },
-  title: {
-    marginBottom: verticalScale(32),
-  },
-  form: {
-    marginBottom: verticalScale(24),
-  },
-  continueBtn: {
-    marginTop: verticalScale(16),
-  },
-  footer: {
-    flexDirection: 'row',
-    marginTop: verticalScale(16),
-  },
-  socialSection: {
-    marginTop: verticalScale(10),
-  },
-  separatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: verticalScale(10),
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.border,
-  },
-  orText: {
-    marginHorizontal: horizontalScale(16),
-  },
-});
