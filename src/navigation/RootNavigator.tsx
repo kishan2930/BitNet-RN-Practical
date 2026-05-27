@@ -12,9 +12,12 @@ const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
   const { user, loading: authLoading } = useAuth();
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const [checkedUid, setCheckedUid] = useState<string | null>(null);
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [appReady, setAppReady] = useState(false);
+
+  // Derive if we are currently fetching onboarding status for the logged-in user
+  const isCheckingOnboarding = user ? checkedUid !== user.uid : false;
 
   // Minimum duration of 2 seconds for splash screen
   useEffect(() => {
@@ -28,8 +31,6 @@ const RootNavigator = () => {
     let unsubscribe: (() => void) | undefined;
 
     if (user) {
-      setCheckingOnboarding(true);
-
       try {
         const db = getFirestore();
 
@@ -41,21 +42,21 @@ const RootNavigator = () => {
             } else {
               setIsOnboardingComplete(false);
             }
-            setCheckingOnboarding(false);
+            setCheckedUid(user.uid);
           },
           error => {
             console.error('Firestore snapshot error:', error);
-            setCheckingOnboarding(false);
+            setCheckedUid(user.uid);
             setIsOnboardingComplete(false);
           }
         );
       } catch (e) {
         console.error('Firestore initialization error:', e);
-        setCheckingOnboarding(false);
+        setCheckedUid(user.uid);
         setIsOnboardingComplete(false);
       }
     } else {
-      setCheckingOnboarding(false);
+      setCheckedUid(null);
       setIsOnboardingComplete(false);
     }
 
@@ -64,8 +65,8 @@ const RootNavigator = () => {
     };
   }, [user]);
 
-  // Show splash screen while checking auth, loading profile, or waiting for minimum splash time
-  if (authLoading || checkingOnboarding || !appReady) {
+  // Show splash screen while loading auth, checking onboarding status, or waiting for minimum splash time
+  if (authLoading || isCheckingOnboarding || !appReady) {
     return <SplashScreen />;
   }
 

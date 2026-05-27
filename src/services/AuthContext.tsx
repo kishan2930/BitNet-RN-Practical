@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { Alert } from 'react-native';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import firestore from '@react-native-firebase/firestore';
 
 interface AuthContextType {
   user: FirebaseAuthTypes.User | null;
@@ -34,6 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithGoogle = async () => {
     try {
       setLoading(true);
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
       const response = await GoogleSignin.signIn();
       const idToken = response.data?.idToken;
@@ -45,22 +47,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const result = await auth().signInWithCredential(googleCredential);
 
-      // Create Firestore user document if it doesn't exist
-      const db = getFirestore();
-      const userDocRef = doc(db, 'users', result.user.uid);
-      const userDocSnap = await getDoc(userDocRef);
+      // NATIVE FIRESTORE SYNTAX: Check if user document exists
+      const userDoc = await firestore().collection('users').doc(result.user.uid).get();
 
-      if (!userDocSnap.exists()) {
-        await setDoc(userDocRef, {
-          firstName: result.user.displayName?.split(' ')[0] || '',
-          lastName: result.user.displayName?.split(' ')[1] || '',
-          email: result.user.email,
-          createdAt: serverTimestamp(),
+      if (!userDoc.exists) {
+        const displayName = result.user.displayName || '';
+        const nameParts = displayName.trim().split(/\s+/);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        // NATIVE FIRESTORE SYNTAX: Create document
+        await firestore().collection('users').doc(result.user.uid).set({
+          firstName,
+          lastName,
+          email: result.user.email || '',
+          createdAt: new Date().toISOString(),
           isOnboardingComplete: false,
         });
       }
-    } catch (error) {
-      console.error('Google Sign-In failed:', error);
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('Google Sign-In was cancelled by the user.');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Google Sign-In is already in progress.');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Google Play Services', 'Google Play Services are not available or outdated.');
+      } else {
+        console.error('Google Sign-In failed:', error);
+        Alert.alert('Google Sign-In Error', error.message || 'An error occurred during Google Sign-In.');
+      }
     } finally {
       setLoading(false);
     }
