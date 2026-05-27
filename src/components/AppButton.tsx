@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   socialText: {
-    fontSize: 16,
   },
   iconContainer: {
     marginRight: horizontalScale(12),

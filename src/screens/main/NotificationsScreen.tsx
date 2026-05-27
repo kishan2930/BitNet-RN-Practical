@@ -18,7 +18,7 @@ const NotificationsScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <CustomText variant="bold" style={styles.headerTitle}>
+        <CustomText variant="bold" size={18} style={styles.headerTitle}>
           Notifications
         </CustomText>
       </View>

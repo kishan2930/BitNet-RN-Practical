@@ -6,12 +6,12 @@ import OrdersScreen from '@screens/main/OrdersScreen';
 import ProfileScreen from '@screens/main/ProfileScreen';
 import { COLORS } from '@constants/theme';
 import { Home, Bell, Receipt, User } from 'lucide-react-native';
-import { verticalScale } from '@utils/responsive';
+import { verticalScale, moderateScale, isTablet } from '@utils/responsive';
 
 const Tab = createBottomTabNavigator();
 
 const getTabBarIcon = (routeName: string, color: string, focused: boolean) => {
-  const iconSize = focused ? 26 : 24;
+  const iconSize = moderateScale(focused ? 26 : 24);
   const strokeWidth = focused ? 2.5 : 2;
   switch (routeName) {
     case 'HomeTab':
@@ -39,9 +39,13 @@ const MainTabNavigator = () => {
           backgroundColor: COLORS.background,
           borderTopWidth: 1,
           borderTopColor: COLORS.surface, // Softer, more subtle separator line
-          height: Platform.OS === 'ios' ? verticalScale(88) : verticalScale(72),
-          paddingBottom: Platform.OS === 'ios' ? verticalScale(28) : verticalScale(12),
-          paddingTop: verticalScale(12),
+          height: isTablet
+            ? (Platform.OS === 'ios' ? 96 : 80)
+            : (Platform.OS === 'ios' ? verticalScale(88) : verticalScale(72)),
+          paddingBottom: isTablet
+            ? (Platform.OS === 'ios' ? 24 : 16)
+            : (Platform.OS === 'ios' ? verticalScale(28) : verticalScale(12)),
+          paddingTop: isTablet ? 16 : verticalScale(12),
           elevation: 0, // Remove shadow on Android for flat look
           shadowOpacity: 0, // Remove shadow on iOS for flat look
         },

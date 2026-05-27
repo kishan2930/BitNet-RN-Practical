@@ -22,12 +22,20 @@ export const verticalScale = (size: number) => (SCREEN_HEIGHT / guidelineBaseHei
 export const moderateScale = (size: number, factor = 0.5) => size + (horizontalScale(size) - size) * factor;
 
 /**
- * Scales font sizes based on pixel density
+ * Detects if the device is a tablet
+ */
+export const isTablet = SCREEN_WIDTH >= 600;
+
+/**
+ * Scales font sizes based on screen size with moderation
  */
 export const fontScale = (size: number) => {
   const scale = SCREEN_WIDTH / guidelineBaseWidth;
-  const newSize = size * scale;
+  // Apply moderated scaling for fonts (lower factor on tablet, slightly higher on phone)
+  const factor = isTablet ? 0.35 : 0.65;
+  const newSize = size + (horizontalScale(size) - size) * factor;
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
 export { SCREEN_WIDTH, SCREEN_HEIGHT };
+

@@ -8,6 +8,7 @@ import AppButton from '@components/AppButton';
 import EmptyCartIcon from '@assets/emptyOrder.svg';
 import { COLORS } from '@constants/theme';
 import { cartStyles as styles } from '@styles/main/cartStyles';
+import { moderateScale } from '@utils/responsive';
 
 const CartScreen = () => {
   const navigation = useNavigation<any>();
@@ -25,7 +26,7 @@ const CartScreen = () => {
       {/* Header with Back Button */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton} activeOpacity={0.7}>
-          <ChevronLeft size={24} color={COLORS.textPrimary} />
+          <ChevronLeft size={moderateScale(24)} color={COLORS.textPrimary} />
         </TouchableOpacity>
       </View>
 

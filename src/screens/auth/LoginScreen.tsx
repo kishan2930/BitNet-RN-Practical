@@ -11,6 +11,7 @@ import AppleIcon from '@assets/appleicon.svg';
 import GoogleIcon from '@assets/Googleicon.svg';
 import FacebookIcon from '@assets/Facebookicon.svg';
 import { loginStyles as styles } from '@styles/auth/loginStyles';
+import { moderateScale } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@appTypes/auth';
@@ -71,19 +72,19 @@ const LoginScreen = ({ navigation }: Props) => {
             variant="social"
             title="Continue with Apple"
             onPress={() => {}}
-            icon={<AppleIcon width={24} height={24} />}
+            icon={<AppleIcon width={moderateScale(24)} height={moderateScale(24)} />}
           />
           <AppButton
             variant="social"
             title="Continue with Google"
             onPress={loginWithGoogle}
-            icon={<GoogleIcon width={24} height={24} />}
+            icon={<GoogleIcon width={moderateScale(24)} height={moderateScale(24)} />}
           />
           <AppButton
             variant="social"
             title="Continue with Facebook"
             onPress={() => {}}
-            icon={<FacebookIcon width={24} height={24} />}
+            icon={<FacebookIcon width={moderateScale(24)} height={moderateScale(24)} />}
           />
         </View>
       </View>

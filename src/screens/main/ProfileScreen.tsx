@@ -7,6 +7,7 @@ import CustomText from '@components/CustomText';
 import { COLORS } from '@constants/theme';
 import { ProfileMenuItem } from '@appTypes/main';
 import { profileStyles as styles } from '@styles/main/profileStyles';
+import { moderateScale } from '@utils/responsive';
 
 const ProfileScreen = () => {
   const { user, profile, logout } = useAuth();
@@ -80,7 +81,7 @@ const ProfileScreen = () => {
               <CustomText variant="medium" size={16} style={styles.menuText}>
                 {item.title}
               </CustomText>
-              <ChevronRight size={24} color={COLORS.textSecondary} />
+              <ChevronRight size={moderateScale(24)} color={COLORS.textSecondary} />
             </TouchableOpacity>
           ))}
         </View>

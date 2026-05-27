@@ -8,6 +8,7 @@ import { CategoryItem, Gender } from '@appTypes/main';
 import { categoriesStyles as styles } from '@styles/main/categoriesStyles';
 import { COLORS } from '@constants/theme';
 import { useCategories } from '@hooks/useCategories';
+import { moderateScale } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '@appTypes/main';
@@ -53,7 +54,7 @@ const CategoriesScreen = ({ navigation, route }: Props) => {
           style={styles.backButton}
           activeOpacity={0.7}
         >
-          <ArrowLeft color={COLORS.textPrimary} size={24} />
+          <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
         </TouchableOpacity>
 
         <CustomText variant="bold" size={18} color={COLORS.textPrimary}>

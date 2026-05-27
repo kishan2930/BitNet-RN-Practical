@@ -41,7 +41,7 @@ export const categoryProductsStyles = StyleSheet.create({
     paddingBottom: verticalScale(40),
   },
   productCard: {
-    flex: 0.5, // 2-column grid card takes half width
+    flex: 1, // responsive grid card takes equal share of row width
     backgroundColor: COLORS.surface,
     borderRadius: moderateScale(16),
     margin: horizontalScale(6),
@@ -69,7 +69,7 @@ export const categoryProductsStyles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: verticalScale(160),
+    aspectRatio: 1,
     resizeMode: 'cover',
   },
   productDetails: {

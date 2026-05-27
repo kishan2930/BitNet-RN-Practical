@@ -15,7 +15,7 @@ export const UserService = {
    */
   getUserProfile: async (uid: string): Promise<UserProfile | null> => {
     const doc = await firestore().collection('users').doc(uid).get();
-    return doc.exists ? (doc.data() as UserProfile) : null;
+    return doc.exists() ? (doc.data() as UserProfile) : null;
   },
 
   /**
@@ -27,7 +27,7 @@ export const UserService = {
       .doc(uid)
       .onSnapshot(
         snapshot => {
-          onUpdate(snapshot?.exists ? (snapshot.data() as UserProfile) : null);
+          onUpdate(snapshot && snapshot.exists() ? (snapshot.data() as UserProfile) : null);
         },
         error => {
           console.error('Error subscribing to user profile:', error);

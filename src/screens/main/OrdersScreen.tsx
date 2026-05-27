@@ -18,7 +18,7 @@ const OrdersScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <CustomText variant="bold" style={styles.headerTitle}>
+        <CustomText variant="bold" size={18} style={styles.headerTitle}>
           Orders
         </CustomText>
       </View>

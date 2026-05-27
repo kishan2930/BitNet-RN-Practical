@@ -5,13 +5,7 @@ import CategoriesScreen from '@screens/main/CategoriesScreen';
 import CategoryProductsScreen from '@screens/main/CategoryProductsScreen';
 import CartScreen from '@screens/main/CartScreen';
 
-// We define parameters for type safety in navigation
-export type HomeStackParamList = {
-  HomeMain: undefined;
-  Categories: undefined;
-  CategoryProducts: { categoryId: string; categoryName: string };
-  Cart: undefined;
-};
+import { HomeStackParamList } from '@appTypes/main';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 

@@ -14,7 +14,6 @@ export const ordersStyles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   headerTitle: {
-    fontSize: 18,
     color: COLORS.textPrimary,
   },
   content: {

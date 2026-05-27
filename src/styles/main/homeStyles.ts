@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING } from '@constants/theme';
-import { horizontalScale, verticalScale, moderateScale } from '@utils/responsive';
+import { horizontalScale, verticalScale, moderateScale, fontScale } from '@utils/responsive';
 
 export const homeStyles = StyleSheet.create({
   container: {
@@ -65,7 +65,7 @@ export const homeStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     color: COLORS.textPrimary,
-    fontSize: 16,
+    fontSize: fontScale(16),
     padding: 0,
   },
   sectionHeader: {
@@ -107,10 +107,10 @@ export const homeStyles = StyleSheet.create({
     paddingBottom: verticalScale(SPACING.m),
   },
   productCard: {
-    width: horizontalScale(160),
+    width: moderateScale(160, 0.4),
     backgroundColor: COLORS.surface,
     borderRadius: moderateScale(16),
-    marginRight: horizontalScale(16),
+    marginRight: moderateScale(16, 0.4),
     overflow: 'hidden',
     position: 'relative',
   },
@@ -135,7 +135,7 @@ export const homeStyles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: verticalScale(160),
+    aspectRatio: 1,
     resizeMode: 'cover',
   },
   productDetails: {

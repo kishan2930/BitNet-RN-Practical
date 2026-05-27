@@ -9,6 +9,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import { loginPasswordStyles as styles } from '@styles/auth/loginPasswordStyles';
 import { useLoginPasswordForm } from '@hooks/useLoginPasswordForm';
+import { moderateScale } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@appTypes/auth';
@@ -48,7 +49,7 @@ const LoginPasswordScreen = ({ navigation, route }: Props) => {
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <ArrowLeft color={COLORS.textPrimary} size={24} />
+            <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
           </TouchableOpacity>
         </View>
 

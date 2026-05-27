@@ -9,6 +9,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
 import { forgotPasswordStyles as styles } from '@styles/auth/forgotPasswordStyles';
 import { useForgotPasswordForm } from '@hooks/useForgotPasswordForm';
+import { moderateScale } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@appTypes/auth';
@@ -38,7 +39,7 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <ArrowLeft color={COLORS.textPrimary} size={24} />
+            <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
           </TouchableOpacity>
         </View>
 

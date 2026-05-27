@@ -11,6 +11,7 @@ import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
 import { createAccountStyles as styles } from '@styles/auth/createAccountStyles';
 import { SignUpFormState } from '@appTypes/auth';
 import { useSignUpForm } from '@hooks/useSignUpForm';
+import { moderateScale } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@appTypes/auth';
@@ -63,7 +64,7 @@ const CreateAccountScreen = ({ navigation }: Props) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <ArrowLeft color={COLORS.textPrimary} size={24} />
+            <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
           </TouchableOpacity>
         </View>
 

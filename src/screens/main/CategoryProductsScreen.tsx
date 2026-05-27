@@ -7,6 +7,7 @@ import { ProductItem } from '@appTypes/main';
 import { categoryProductsStyles as styles } from '@styles/main/categoryProductsStyles';
 import { COLORS } from '@constants/theme';
 import { useProducts } from '@hooks/useProducts';
+import { moderateScale, isTablet } from '@utils/responsive';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '@appTypes/main';
@@ -43,7 +44,7 @@ const CategoryProductsScreen = ({ navigation, route }: Props) => {
           onPress={() => toggleFavorite(item.id)}
         >
           <Heart
-            size={16}
+            size={moderateScale(16)}
             color={isFavorited ? COLORS.error : COLORS.textPrimary}
             fill={isFavorited ? COLORS.error : 'none'}
           />
@@ -97,7 +98,7 @@ const CategoryProductsScreen = ({ navigation, route }: Props) => {
           style={styles.backButton}
           activeOpacity={0.7}
         >
-          <ArrowLeft color={COLORS.textPrimary} size={24} />
+          <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
         </TouchableOpacity>
 
         <CustomText variant="bold" size={18} color={COLORS.textPrimary}>
@@ -114,11 +115,12 @@ const CategoryProductsScreen = ({ navigation, route }: Props) => {
       </View>
 
       {products.length > 0 ? (
-        <FlatList
+         <FlatList
+          key={isTablet ? 'tablet-grid' : 'phone-grid'}
           data={products}
           renderItem={renderProductCard}
           keyExtractor={(item) => item.id}
-          numColumns={2}
+          numColumns={isTablet ? 3 : 2}
           contentContainerStyle={styles.gridContent}
           showsVerticalScrollIndicator={false}
         />

@@ -20,6 +20,7 @@ import { COLORS } from '@constants/theme';
 import CustomText from '@components/CustomText';
 import { CategoryItem, ProductItem, Gender } from '@appTypes/main';
 import { homeStyles as styles } from '@styles/main/homeStyles';
+import { moderateScale } from '@utils/responsive';
 
 import { HomeStackNavigationProp } from '@appTypes/main';
 
@@ -100,7 +101,7 @@ const HomeScreen = () => {
           onPress={() => toggleFavorite(item.id)}
         >
           <Heart
-            size={16}
+            size={moderateScale(16)}
             color={isFavorited ? COLORS.error : COLORS.textPrimary}
             fill={isFavorited ? COLORS.error : 'none'}
           />
@@ -161,7 +162,7 @@ const HomeScreen = () => {
           <CustomText variant="bold" size={16} style={styles.genderText}>
             {gender.charAt(0).toUpperCase() + gender.slice(1)}{' '}
           </CustomText>
-          <ChevronDown size={16} color={COLORS.textPrimary} />
+          <ChevronDown size={moderateScale(16)} color={COLORS.textPrimary} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -169,13 +170,13 @@ const HomeScreen = () => {
           activeOpacity={0.8}
           onPress={() => navigation.navigate('Cart')}
         >
-          <ShoppingBag size={18} color={COLORS.white} />
+          <ShoppingBag size={moderateScale(18)} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.searchBarContainer}>
-          <Search size={18} color={COLORS.textSecondary} style={styles.searchIcon} />
+          <Search size={moderateScale(18)} color={COLORS.textSecondary} style={styles.searchIcon} />
           <TextInput
             placeholder="Search"
             placeholderTextColor={COLORS.textSecondary}
