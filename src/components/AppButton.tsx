@@ -51,12 +51,16 @@ const AppButton: React.FC<AppButtonProps> = ({
         <ActivityIndicator color={isPrimary ? COLORS.white : COLORS.primary} />
       ) : (
         <>
-          {icon && <View style={styles.iconContainer}>{icon}</View>}
+          {icon && (
+            <View style={[styles.iconContainer, isSocial && styles.socialIconContainer]}>
+              {icon}
+            </View>
+          )}
           <CustomText
-            variant="medium"
+            variant="bold"
             size={16}
             color={isPrimary ? COLORS.white : COLORS.textPrimary}
-            style={[styles.text, textStyle]}>
+            style={[styles.text, isSocial && styles.socialText, textStyle]}>
             {title}
           </CustomText>
         </>
@@ -76,14 +80,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: verticalScale(8),
+    position: 'relative',
   },
   primaryContainer: {
     backgroundColor: COLORS.primary,
   },
   socialContainer: {
     backgroundColor: COLORS.surface,
-    justifyContent: 'flex-start',
-    paddingHorizontal: horizontalScale(20),
   },
   disabledContainer: {
     backgroundColor: COLORS.textSecondary,
@@ -92,7 +95,15 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
   },
+  socialText: {
+    fontSize: 16,
+  },
   iconContainer: {
     marginRight: horizontalScale(12),
+  },
+  socialIconContainer: {
+    position: 'absolute',
+    left: horizontalScale(24),
+    marginRight: 0,
   },
 });

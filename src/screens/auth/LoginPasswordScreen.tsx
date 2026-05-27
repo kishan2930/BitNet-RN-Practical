@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
@@ -7,29 +8,35 @@ import { COLORS } from '@constants/theme';
 import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import { loginPasswordStyles as styles } from '@styles/auth/loginPasswordStyles';
+import { useLoginPasswordForm } from '@hooks';
 
 const LoginPasswordScreen = ({ navigation, route }: any) => {
   const { email } = route.params;
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSignIn = async () => {
+  const handleSignInSubmit = async (passwordInput: string) => {
     try {
-      setLoading(true);
-      await signInWithEmailAndPassword(getAuth(), email, password);
+      await signInWithEmailAndPassword(getAuth(), email, passwordInput);
     } catch (error: any) {
       let errorMessage = 'An error occurred during sign in.';
-      if (error.code === 'auth/wrong-password') {
-        errorMessage = 'Invalid password. Please try again.';
+      if (
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-credential'
+      ) {
+        errorMessage = 'Invalid email or password. Please try again.';
       } else if (error.code === 'auth/user-not-found') {
         errorMessage = 'No user found with this email.';
       }
-
       Alert.alert('Login Failed', errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
+
+  const {
+    password,
+    error,
+    loading,
+    handlePasswordChange,
+    handleSubmit,
+  } = useLoginPasswordForm(handleSignInSubmit);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,17 +55,18 @@ const LoginPasswordScreen = ({ navigation, route }: any) => {
           <AppInput
             placeholder="Password"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             secureTextEntry
             autoFocus
+            error={error}
           />
 
           <AppButton
             title="Continue"
-            onPress={handleSignIn}
+            onPress={handleSubmit}
             loading={loading}
             style={styles.continueBtn}
-            disabled={!password || loading}
+            disabled={loading}
           />
 
           <View style={styles.footer}>

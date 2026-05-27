@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView, Alert, ScrollView } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
@@ -8,24 +9,13 @@ import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@react-native-firebase/auth';
 import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
 import { createAccountStyles as styles } from '@styles/auth/createAccountStyles';
-import { INITIAL_SIGNUP_FORM, SignUpFormState } from '@appTypes/auth';
+import { SignUpFormState } from '@appTypes/auth';
+import { useSignUpForm } from '@hooks';
 
 const CreateAccountScreen = ({ navigation }: any) => {
-  const [formData, setFormData] = useState<SignUpFormState>(INITIAL_SIGNUP_FORM);
-  const [loading, setLoading] = useState(false);
-
-  const handleInputChange = (field: keyof SignUpFormState, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSignUp = async () => {
+  const handleSignUpSubmit = async (data: SignUpFormState) => {
     try {
-      setLoading(true);
-
-      const { email, password, firstName, lastName } = formData;
+      const { email, password, firstName, lastName } = data;
       const response = await createUserWithEmailAndPassword(getAuth(), email, password);
       const uid = response.user.uid;
 
@@ -52,16 +42,16 @@ const CreateAccountScreen = ({ navigation }: any) => {
       }
 
       Alert.alert('Registration Failed', errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const isFormValid =
-    formData.firstName.trim() !== '' &&
-    formData.lastName.trim() !== '' &&
-    formData.email.trim() !== '' &&
-    formData.password.length >= 6;
+  const {
+    formData,
+    errors,
+    loading,
+    handleInputChange,
+    handleSubmit,
+  } = useSignUpForm(handleSignUpSubmit);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,12 +71,14 @@ const CreateAccountScreen = ({ navigation }: any) => {
             placeholder="Firstname"
             value={formData.firstName}
             onChangeText={(val) => handleInputChange('firstName', val)}
+            error={errors.firstName}
           />
 
           <AppInput
             placeholder="Lastname"
             value={formData.lastName}
             onChangeText={(val) => handleInputChange('lastName', val)}
+            error={errors.lastName}
           />
 
           <AppInput
@@ -95,6 +87,7 @@ const CreateAccountScreen = ({ navigation }: any) => {
             onChangeText={(val) => handleInputChange('email', val)}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={errors.email}
           />
 
           <AppInput
@@ -102,14 +95,15 @@ const CreateAccountScreen = ({ navigation }: any) => {
             value={formData.password}
             onChangeText={(val) => handleInputChange('password', val)}
             secureTextEntry
+            error={errors.password}
           />
 
           <AppButton
             title="Continue"
-            onPress={handleSignUp}
+            onPress={handleSubmit}
             loading={loading}
             style={styles.continueBtn}
-            disabled={!isFormValid || loading}
+            disabled={loading}
           />
 
           <View style={styles.footer}>

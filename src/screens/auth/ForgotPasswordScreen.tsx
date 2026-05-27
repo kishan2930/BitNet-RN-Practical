@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
@@ -7,22 +8,25 @@ import { COLORS } from '@constants/theme';
 import { ArrowLeft } from 'lucide-react-native';
 import { getAuth, sendPasswordResetEmail } from '@react-native-firebase/auth';
 import { forgotPasswordStyles as styles } from '@styles/auth/forgotPasswordStyles';
+import { useForgotPasswordForm } from '@hooks';
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleReset = async () => {
+  const handleResetSubmit = async (emailInput: string) => {
     try {
-      setLoading(true);
-      await sendPasswordResetEmail(getAuth(), email);
+      await sendPasswordResetEmail(getAuth(), emailInput);
       navigation.navigate('ForgotPasswordMsg');
     } catch (error: any) {
       Alert.alert('Error', 'Failed to send reset email.');
-    } finally {
-      setLoading(false);
     }
   };
+
+  const {
+    email,
+    error,
+    loading,
+    handleEmailChange,
+    handleSubmit,
+  } = useForgotPasswordForm(handleResetSubmit);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,17 +45,18 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
           <AppInput
             placeholder="Enter Email Address"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={error}
           />
 
           <AppButton
             title="Continue"
-            onPress={handleReset}
+            onPress={handleSubmit}
             loading={loading}
             style={styles.continueBtn}
-            disabled={!email || loading}
+            disabled={loading}
           />
         </View>
       </View>

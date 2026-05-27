@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, SafeAreaView } from 'react-native';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import { horizontalScale } from '@utils/responsive';

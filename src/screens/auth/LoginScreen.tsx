@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, SafeAreaView } from 'react-native';
+import React from 'react';
+import { View, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import AppInput from '@components/AppInput';
 import { COLORS } from '@constants/theme';
 import { useAuth } from '@services/AuthContext';
+import { useLoginForm } from '@hooks';
 import AppleIcon from '@assets/appleicon.svg';
 import GoogleIcon from '@assets/Googleicon.svg';
 import FacebookIcon from '@assets/Facebookicon.svg';
 import { loginStyles as styles } from '@styles/auth/loginStyles';
 
 const LoginScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState('');
   const { loginWithGoogle } = useAuth();
+  const { email, error, handleEmailChange, handleSubmit } = useLoginForm((validEmail: string) => {
+    navigation.navigate('LoginPassword', { email: validEmail });
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -25,16 +29,16 @@ const LoginScreen = ({ navigation }: any) => {
           <AppInput
             placeholder="Email Address"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={error}
           />
 
           <AppButton
             title="Continue"
-            onPress={() => navigation.navigate('LoginPassword', { email })}
+            onPress={handleSubmit}
             style={styles.continueBtn}
-            disabled={!email}
           />
 
           <View style={styles.footer}>
@@ -62,21 +66,18 @@ const LoginScreen = ({ navigation }: any) => {
             variant="social"
             title="Continue with Apple"
             onPress={() => {}}
-            textStyle={{ fontSize: 14 }}
             icon={<AppleIcon width={24} height={24} />}
           />
           <AppButton
             variant="social"
             title="Continue with Google"
             onPress={loginWithGoogle}
-            textStyle={{ fontSize: 14 }}
             icon={<GoogleIcon width={24} height={24} />}
           />
           <AppButton
             variant="social"
             title="Continue with Facebook"
             onPress={() => {}}
-            textStyle={{ fontSize: 14 }}
             icon={<FacebookIcon width={24} height={24} />}
           />
         </View>

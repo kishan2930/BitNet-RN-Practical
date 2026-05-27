@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, StatusBar, Image } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import { COLORS } from '@constants/theme';
+import ClotLogo from '@assets/clot-Logo.svg';
 import { splashStyles as styles } from '@styles/auth/splashStyles';
+import { horizontalScale, verticalScale } from '@utils/responsive';
 
 const SplashScreen = ({ navigation }: any) => {
   useEffect(() => {
@@ -15,13 +17,7 @@ const SplashScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
       <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Image
-            source={require('@assets/clot-Logo.svg')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </View>
+        <ClotLogo width={horizontalScale(175)} height={verticalScale(80)} />
       </View>
     </View>
   );

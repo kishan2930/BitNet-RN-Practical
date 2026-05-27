@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
   View,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
 import AppButton from '@components/AppButton';
 import { COLORS } from '@constants/theme';
