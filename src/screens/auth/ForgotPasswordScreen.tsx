@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '@components/CustomText';
@@ -22,23 +21,21 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
       await sendPasswordResetEmail(getAuth(), emailInput);
       navigation.navigate('ForgotPasswordMsg');
     } catch (error: any) {
-      Alert.alert('Error', 'Failed to send reset email.');
+      Alert.alert('Error', error.message || 'Failed to send reset email.');
     }
   };
 
-  const {
-    email,
-    error,
-    loading,
-    handleEmailChange,
-    handleSubmit,
-  } = useForgotPasswordForm(handleResetSubmit);
+  const { email, error, loading, handleEmailChange, handleSubmit } =
+    useForgotPasswordForm(handleResetSubmit);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color={COLORS.textPrimary} size={moderateScale(24)} />
           </TouchableOpacity>
         </View>

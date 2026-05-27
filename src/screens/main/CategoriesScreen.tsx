@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 import CustomText from '@components/CustomText';
-import { CategoryItem, Gender } from '@appTypes/main';
+import { CategoryItem } from '@appTypes/main';
 import { categoriesStyles as styles } from '@styles/main/categoriesStyles';
 import { COLORS } from '@constants/theme';
 import { useCategories } from '@hooks/useCategories';
