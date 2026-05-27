@@ -32,6 +32,7 @@ export type HomeStackParamList = {
   HomeMain: undefined;
   Categories: { gender: Gender };
   CategoryProducts: { categoryId: string; categoryName: string; gender: Gender };
+  Cart: undefined;
 };
 
 export type HomeStackNavigationProp = NativeStackNavigationProp<HomeStackParamList>;

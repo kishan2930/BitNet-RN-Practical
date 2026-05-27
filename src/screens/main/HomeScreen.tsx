@@ -222,7 +222,11 @@ const HomeScreen = () => {
           <ChevronDown size={16} color={COLORS.textPrimary} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.cartButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.cartButton}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Cart')}
+        >
           <ShoppingBag size={18} color={COLORS.white} />
         </TouchableOpacity>
       </View>
