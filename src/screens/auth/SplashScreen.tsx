@@ -7,6 +7,7 @@ import { horizontalScale, verticalScale } from '@utils/responsive';
 
 const SplashScreen = ({ navigation }: any) => {
   useEffect(() => {
+    if (!navigation) return;
     const timer = setTimeout(() => {
       navigation.replace('Login');
     }, 2000);
